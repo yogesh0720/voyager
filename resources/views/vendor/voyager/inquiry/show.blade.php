@@ -70,10 +70,10 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="emailAddress">emailAddress</label>
-                                <input type="text" class="form-control" id="emailAddress" name="emailAddress"
-                                       placeholder="emailAddress"
-                                       value="{{ $inquiryData->emailAddress ?? '' }}" disabled="disabled">
+                                <label for="emailID">emailID</label>
+                                <input type="text" class="form-control" id="emailID" name="emailID"
+                                       placeholder="emailID"
+                                       value="{{ $inquiryData->emailID ?? '' }}" disabled="disabled">
                             </div>
 
                             <div class="form-group">

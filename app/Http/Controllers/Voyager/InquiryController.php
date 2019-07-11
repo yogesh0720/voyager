@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Voyager;
 
+use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -59,10 +60,15 @@ class InquiryController extends Controller {
         $input['status'] = isset($input['status']) && $input['status'] == 'on' ? '1' : '0';
 
         $inquiryData = Inquiry::create($input);
-        //var_dump($inquiryData);die;
-        return redirect()->route('index')
-            ->with('success', 'Saved successfully.');
-        //return Voyager::view('voyager::inquiry.edit-add', compact('inquiryData'));
+        if ($inquiryData instanceof Inquiry) {
+            toastr()->success(__('voyager::generic.successfully_added_new'));
+
+            return redirect()->route('index');
+        }
+        toastr()->error('An error has occurred please try again later.');
+
+        return back();
+
     }
 
     /**
@@ -106,11 +112,10 @@ class InquiryController extends Controller {
      * @return Response
      */
     public function update (Request $request, Inquiry $inquiryData, $id) {
-        $this->validator($request, $id);
-        $inquiryData->update($request->all());
-
-        return redirect()->route('index')
-            ->with('success', 'Updated successfully');
+        $validatedData = $this->validator($request, $id);
+        Inquiry::whereId($id)->update($validatedData);
+        toastr()->success(__('voyager::generic.successfully_updated'));
+        return redirect()->route('index');
     }
 
     /**
@@ -119,11 +124,27 @@ class InquiryController extends Controller {
      * @param int $id
      * @return void
      */
-    public function destroy (Request $request, Inquiry $inquiryData, $id) {
+    public function destroy ($id) {
+        try {
+            $inquiryData = Inquiry::findOrFail($id);
+        } catch (ModelNotFoundException $exception) {
+            throw new NotFoundException('Inquiry not found by ID ' . $id);
+        }
         $inquiryData->delete();
 
-        return redirect()->route('index')
-            ->with('success','Deleted successfully');
+        toastr()->success(__('voyager::generic.successfully_deleted'));
+        return redirect()->route('index');
+    }
+
+    /** Multiple delete all records.
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function deleteAll (Request $request) {
+        $ids = $request->ids;
+        Inquiry::whereIn('id',explode(",",$ids))->delete();
+        toastr()->success(__('voyager::generic.successfully_deleted'));
+        return redirect()->route('index');
     }
 
     /**
@@ -138,7 +159,7 @@ class InquiryController extends Controller {
             'address' => ['required', 'string'],
             'contactNo' => ['required', 'string', 'max:15'],
             'emailID' => ['required',
-                Rule::unique('inquiry')->ignore($id,'id'),
+                Rule::unique('inquiry')->ignore($id, 'id'),
             ],
             'occupation' => ['required', 'string', 'max:50'],
             'inquiryFor' => ['required', 'string', 'max:100'],

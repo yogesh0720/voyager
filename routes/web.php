@@ -30,4 +30,5 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::put('inquiry/{id}', ['uses' => 'Voyager\InquiryController@update',  'as' => 'update']);
     Route::delete('inquiry/{id}', ['uses' => 'Voyager\InquiryController@destroy',  'as' => 'delete']);
+    Route::delete('multipleDeleteAll', ['uses' => 'Voyager\InquiryController@deleteAll',  'as' => 'deleteAll']);
 });

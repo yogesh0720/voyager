@@ -13,8 +13,7 @@ class Inquiry extends Model{
 
     protected $table = 'inquiry';
 
-    protected $fillable = ['slug', 'firstName', 'lastName', 'address', 'contactNo', 'emailAddress', 'occupation', 'inquiryFor', 'status'];
-
+    protected $fillable = ['firstName', 'lastName', 'address', 'contactNo', 'emailID', 'occupation', 'inquiryFor', 'status'];
 
     public function inquiries()
     {
